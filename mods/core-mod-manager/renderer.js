@@ -480,6 +480,17 @@
 
         <div class="agy-option-item">
           <div class="agy-option-text">
+            <span class="agy-option-title">Автообновление модлоадера</span>
+            <span class="agy-option-desc">Автоматически проверять и тихо загружать обновления с GitHub. Если выключено — показывать диалог с выбором.</span>
+          </div>
+          <label class="agy-switch">
+            <input type="checkbox" id="agy-opt-autoupdate" ${((window.ModAPI && window.ModAPI.getConfig) ? (window.ModAPI.getConfig().autoUpdate !== false) : true) ? 'checked' : ''}>
+            <span class="agy-slider"></span>
+          </label>
+        </div>
+
+        <div class="agy-option-item">
+          <div class="agy-option-text">
             <span class="agy-option-title">Дневной лимит расходов ($)</span>
             <span class="agy-option-desc">Мягкий порог бюджета в день. При превышении 80% контекстный радар в чате меняет цвет на предупреждающий.</span>
           </div>
@@ -522,6 +533,17 @@
         if (window.ModAPI) {
           await window.ModAPI.invokeMain('manager:save-setting', 'context-radar', 'dailyBudget', val);
           if (window.updateRadarUI) window.updateRadarUI();
+        }
+      });
+    }
+
+    const autoUpdateToggle = container.querySelector('#agy-opt-autoupdate');
+    if (autoUpdateToggle) {
+      autoUpdateToggle.addEventListener('change', async (e) => {
+        // @ts-ignore
+        const checked = e.target.checked;
+        if (window.ModAPI) {
+          await window.ModAPI.invokeMain('manager:save-loader-config', 'autoUpdate', checked);
         }
       });
     }
@@ -1174,6 +1196,100 @@
         }
       }
     }, true);
+
+    // Слушатель фонового уведомления о новой версии от main process
+    try {
+      const electron = window.require ? window.require('electron') : null;
+      if (electron && electron.ipcRenderer) {
+        electron.ipcRenderer.on('modloader:update-available', (event, data) => {
+          showUpdateNotification(data);
+        });
+      }
+    } catch (_) {}
+  }
+
+  function showUpdateNotification(data) {
+    if (!data || document.getElementById('agy-update-modal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'agy-update-modal';
+    modal.style.cssText = `
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100000;
+      width: 360px;
+      background: #090D14;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: #F8FAFC;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    `;
+
+    modal.innerHTML = `
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="width:8px; height:8px; border-radius:50%; background:#38BDF8; box-shadow:0 0 10px #38BDF8;"></span>
+          <span style="font-size:13px; font-weight:600; color:#FFFFFF;">Доступно обновление</span>
+        </div>
+        <span style="font-size:11px; font-weight:600; color:#38BDF8; background:rgba(56,189,248,0.1); padding:2px 7px; border-radius:4px;">v\${data.latestVer}</span>
+      </div>
+      <div style="font-size:12px; color:#94A3B8; line-height:1.4;">
+        Вышла новая версия <b>v\${data.latestVer}</b> (текущая: v\${data.currentVer}). Хотите обновить компоненты модлоадера?
+      </div>
+      <div style="display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-top:4px;">
+        <button id="agy-update-ignore" style="background:transparent; border:none; color:#64748B; font-size:11.5px; cursor:pointer; padding:6px 10px; border-radius:6px; transition:color 0.15s;">Не показывать больше</button>
+        <button id="agy-update-now" style="background:linear-gradient(180deg, #0284C7 0%, #0369A1 100%); border:1px solid rgba(255,255,255,0.15); color:#FFFFFF; font-size:12px; font-weight:500; cursor:pointer; padding:6px 14px; border-radius:7px; box-shadow:0 2px 8px rgba(2,132,199,0.4);">Обновить</button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const btnNow = modal.querySelector('#agy-update-now');
+    const btnIgnore = modal.querySelector('#agy-update-ignore');
+
+    if (btnNow) {
+      btnNow.addEventListener('click', async () => {
+        // @ts-ignore
+        btnNow.textContent = 'Обновление...';
+        // @ts-ignore
+        btnNow.style.pointerEvents = 'none';
+        try {
+          const electron = window.require ? window.require('electron') : null;
+          if (electron && electron.ipcRenderer) {
+            const res = await electron.ipcRenderer.invoke('modloader:apply-update', {
+              downloadUrl: data.downloadUrl,
+              targetVer: data.latestVer
+            });
+            if (res && res.success) {
+              // @ts-ignore
+              btnNow.textContent = 'Готово! (Перезапустите IDE)';
+              setTimeout(() => modal.remove(), 2500);
+            } else {
+              // @ts-ignore
+              btnNow.textContent = 'Ошибка';
+            }
+          }
+        } catch (_) {}
+      });
+    }
+
+    if (btnIgnore) {
+      btnIgnore.addEventListener('click', async () => {
+        try {
+          const electron = window.require ? window.require('electron') : null;
+          if (electron && electron.ipcRenderer) {
+            await electron.ipcRenderer.invoke('modloader:ignore-version', data.latestVer);
+          }
+        } catch (_) {}
+        modal.remove();
+      });
+    }
   }
 
   if (document.readyState === 'loading') {

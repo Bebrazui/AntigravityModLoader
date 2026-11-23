@@ -1098,13 +1098,62 @@ for (const mod of activeMods) {
 
 if (app) {
   app.whenReady().then(() => {
-    // Фоновая тихая проверка обновлений модлоадера
+    // Регистрация обработчиков обновления для клиентского окна
     try {
-      const { checkForUpdates } = require('./updater');
+      const updater = require('./updater');
+      const { getConfig, CONFIG_FILE } = require('./registry');
+
+      ipcMain.handle('modloader:check-updates', async () => {
+        return await updater.checkReleaseInfo();
+      });
+
+      ipcMain.handle('modloader:apply-update', async (event, data) => {
+        try {
+          const downloadUrl = data && data.downloadUrl;
+          const targetVer = data && data.targetVer;
+          await updater.performUpdate(downloadUrl, targetVer);
+          return { success: true };
+        } catch (e) {
+          return { success: false, error: e.message };
+        }
+      });
+
+      ipcMain.handle('modloader:ignore-version', async (event, ver) => {
+        try {
+          const cfg = getConfig();
+          cfg.ignoredUpdateVersion = ver;
+          fs.writeFileSync(CONFIG_FILE, JSON.stringify(cfg, null, 2), 'utf8');
+          return { success: true };
+        } catch (e) {
+          return { success: false, error: e.message };
+        }
+      });
+
+      ipcMain.handle('modloader:set-auto-update', async (event, enabled) => {
+        try {
+          const cfg = getConfig();
+          cfg.autoUpdate = enabled;
+          fs.writeFileSync(CONFIG_FILE, JSON.stringify(cfg, null, 2), 'utf8');
+          return { success: true };
+        } catch (e) {
+          return { success: false, error: e.message };
+        }
+      });
+
+      // Фоновая проверка обновлений
       setTimeout(() => {
-        checkForUpdates(true).catch(() => {});
+        updater.checkForUpdates(true, (updateData) => {
+          // Отправляем уведомление во все открытые окна рендерера
+          BrowserWindow.getAllWindows().forEach(win => {
+            if (win && win.webContents) {
+              win.webContents.send('modloader:update-available', updateData);
+            }
+          });
+        }).catch(() => {});
       }, 5000);
-    } catch (_) {}
+    } catch (e) {
+      log('ERROR:updater_init', e.message);
+    }
 
     try {
       const { globalShortcut } = electron;
