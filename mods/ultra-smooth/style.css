@@ -1,0 +1,53 @@
+/* ==========================================================================
+   Ultra Smooth UI - ЧИСТО ПЛАВНЫЕ АНИМАЦИИ (Без неона, без оверлеев)
+   ========================================================================== */
+
+/* 1. Нативный браузерный плавный скролл без JS-перехватчиков */
+html, body, div, main, section, article {
+  scroll-behavior: smooth !important;
+}
+
+/* 2. Плавная анимация текстового курсора (каретки) - стандартный нативный цвет */
+input, textarea, [contenteditable="true"] {
+  caret-color: currentColor !important;
+}
+
+/* 3. Плавные анимации кнопок и интерактивных элементов (время отклика 120-150мс) */
+button,
+[role="button"],
+a,
+select,
+input[type="checkbox"],
+input[type="radio"],
+.btn {
+  transition: 
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease,
+    box-shadow 0.15s ease !important;
+}
+
+/* 4. Плавная анимация фокуса полей ввода */
+input,
+textarea {
+  transition: 
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.15s ease !important;
+}
+
+/* 5. Плавная анимация появления модальных окон, шторок и меню */
+.modal,
+.dialog,
+[role="dialog"],
+.popover,
+.dropdown-menu,
+.agy-mods-modal {
+  transition: opacity 0.18s ease !important;
+}
+
+/* 6. Плавный скроллбар при наведении */
+::-webkit-scrollbar-thumb {
+  transition: background-color 0.2s ease !important;
+}

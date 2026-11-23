@@ -1,0 +1,23 @@
+{
+  "id": "token-speedometer",
+  "name": "Token Speedometer & Task Telemetry",
+  "description": "Спидометр скорости генерации (токен/сек), расход токенов на текущую задачу (input/output) и телеметрия шагов в реальном времени.",
+  "version": "1.0.0",
+  "author": "Antigravity Dev",
+  "entry": {
+    "renderer": "renderer.js",
+    "main": "main.js"
+  },
+  "settings": {
+    "showInHeader": {
+      "type": "boolean",
+      "default": true,
+      "label": "Показывать спидометр в шапке / статус-баре"
+    },
+    "showLiveTps": {
+      "type": "boolean",
+      "default": true,
+      "label": "Отображать скорость генерации (tok/s)"
+    }
+  }
+}

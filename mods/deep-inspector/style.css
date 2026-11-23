@@ -1,0 +1,321 @@
+/* Deep Inspector Modal & Stream Styles */
+
+/* 1. Floating trigger button in chat toolbar / header */
+#agy-inspector-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(24, 24, 27, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #E4E4E7;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(8px);
+  margin-left: 6px;
+}
+
+#agy-inspector-btn:hover {
+  background: rgba(39, 39, 42, 0.95);
+  border-color: #38BDF8;
+  color: #38BDF8;
+}
+
+#agy-inspector-btn svg {
+  flex-shrink: 0;
+}
+
+/* 2. Fullscreen overlay */
+.agy-insp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.agy-insp-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 3. Modal window */
+.agy-insp-window {
+  width: 92vw;
+  height: 88vh;
+  max-width: 1400px;
+  background: #09090B;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+}
+
+/* Header */
+.agy-insp-header {
+  height: 52px;
+  background: #121215;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.agy-insp-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.agy-insp-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #FAFAFA;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agy-insp-badge {
+  font-size: 10px;
+  font-family: monospace;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.agy-insp-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #18181B;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.agy-insp-tab {
+  background: transparent;
+  border: none;
+  color: #A1A1AA;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.agy-insp-tab:hover {
+  color: #FAFAFA;
+}
+
+.agy-insp-tab.active {
+  background: #27272A;
+  color: #38BDF8;
+  font-weight: 600;
+}
+
+.agy-insp-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agy-insp-icon-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #A1A1AA;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.agy-insp-icon-btn:hover {
+  background: #27272A;
+  color: #FAFAFA;
+}
+
+/* Body & Split View */
+.agy-insp-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  background: #09090B;
+}
+
+/* Sidebar with step list */
+.agy-insp-sidebar {
+  width: 320px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  background: #0D0D11;
+}
+
+.agy-insp-search {
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.agy-insp-search input {
+  width: 100%;
+  background: #18181B;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #FAFAFA;
+  outline: none;
+}
+
+.agy-insp-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.agy-insp-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.12s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agy-insp-item:hover {
+  background: #18181B;
+}
+
+.agy-insp-item.selected {
+  background: #1E1E24;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.agy-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agy-item-type {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.agy-type-model {
+  background: rgba(168, 85, 247, 0.15);
+  color: #C084FC;
+}
+
+.agy-type-user {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60A5FA;
+}
+
+.agy-type-tool {
+  background: rgba(234, 179, 8, 0.15);
+  color: #FACC15;
+}
+
+.agy-type-system {
+  background: rgba(239, 68, 68, 0.15);
+  color: #F87171;
+}
+
+.agy-item-time {
+  font-size: 10px;
+  color: #71717A;
+}
+
+.agy-item-preview {
+  font-size: 11px;
+  color: #D4D4D8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: monospace;
+}
+
+/* Detail Content Area */
+.agy-insp-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #09090B;
+}
+
+.agy-insp-detail-header {
+  padding: 10px 16px;
+  background: #121216;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.agy-insp-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  color: #A1A1AA;
+}
+
+.agy-insp-meta span b {
+  color: #FAFAFA;
+}
+
+.agy-insp-raw-view {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #E4E4E7;
+  white-space: pre-wrap;
+  word-break: break-all;
+  user-select: text;
+}
+
+/* Footer status */
+.agy-insp-footer {
+  height: 32px;
+  background: #0E0E12;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-size: 11px;
+  color: #71717A;
+}

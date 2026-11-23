@@ -1,0 +1,18 @@
+{
+  "id": "interactive-widgets",
+  "name": "Интерактивные виджеты чата",
+  "version": "1.0.0",
+  "author": "ttt79",
+  "description": "Позволяет агенту встраивать живые интерактивные UI-виджеты (HTML/CSS/JS) в чат для выбора опций, настройки параметров и мгновенной обратной связи от пользователя.",
+  "category": "productivity",
+  "main": "main.js",
+  "renderer": "renderer.js",
+  "styles": ["style.css"],
+  "settings": {
+    "autoSubmit": {
+      "type": "boolean",
+      "default": true,
+      "label": "Авто-отправка ответа в чат при клике на опцию"
+    }
+  }
+}

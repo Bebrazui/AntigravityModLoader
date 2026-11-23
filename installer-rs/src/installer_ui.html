@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Antigravity ModLoader</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Custom Sleek Scrollbar */
+    *::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    *::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+    *::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 4px;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.32);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #02060B;
+      color: #FFFFFF;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .app-root {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: #02060B;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+    }
+
+    /* === CUSTOM TITLEBAR (DRAGGABLE & CONTROLS) === */
+    .titlebar {
+      position: relative;
+      z-index: 50;
+      height: 38px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      background: transparent;
+      -webkit-app-region: drag;
+    }
+
+    .titlebar-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #64748b;
+      letter-spacing: 0.2px;
+    }
+
+    .titlebar-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      -webkit-app-region: no-drag;
+    }
+
+    .ctrl-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      padding: 0;
+    }
+    .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+    }
+    .ctrl-close:hover {
+      background: #ef4444 !important;
+      color: #FFFFFF !important;
+    }
+    .ctrl-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    /* === EXACT FIGMA SVG WAVES (100% WIDTH / HEIGHT TO FILL ROOT) === */
+    .bg-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .wave-anim-1 {
+      transform-origin: 380px 850px;
+      animation: gentleWave1 12s ease-in-out infinite alternate;
+    }
+    .wave-anim-2 {
+      transform-origin: 380px 850px;
+      animation: gentleWave2 9s ease-in-out infinite alternate;
+    }
+    .wave-anim-3 {
+      transform-origin: 380px 850px;
+      animation: gentleWave3 7s ease-in-out infinite alternate;
+    }
+
+    @keyframes gentleWave1 {
+      0% { transform: translate(-0.74px, 354px) scaleY(1) skewX(0); }
+      50% { transform: translate(-0.74px, 360px) scaleY(0.97) skewX(1deg); }
+      100% { transform: translate(-0.74px, 348px) scaleY(1.02) skewX(-0.8deg); }
+    }
+    @keyframes gentleWave2 {
+      0% { transform: translate(0px, 435px) scaleY(1) skewX(0); }
+      50% { transform: translate(0px, 442px) scaleY(0.96) skewX(-1.2deg); }
+      100% { transform: translate(0px, 428px) scaleY(1.03) skewX(1deg); }
+    }
+    @keyframes gentleWave3 {
+      0% { transform: translate(-0.74px, 496px) scaleY(1); }
+      50% { transform: translate(-0.74px, 504px) scaleY(0.95); }
+      100% { transform: translate(-0.74px, 490px) scaleY(1.02); }
+    }
+
+    /* === FOREGROUND CONTENT === */
+    .content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: calc(100% - 38px);
+      padding: 24px 50px 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Staggered entrance animation: blur -> sharp, easy-out */
+    .anim-in {
+      opacity: 0;
+      animation: smoothEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .del-1 { animation-delay: 0.05s; }
+    .del-2 { animation-delay: 0.12s; }
+    .del-3 { animation-delay: 0.18s; }
+    .del-4 { animation-delay: 0.24s; }
+    .del-5 { animation-delay: 0.32s; }
+
+    @keyframes smoothEntrance {
+      0% {
+        opacity: 0;
+        filter: blur(14px);
+        transform: translateY(16px);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+      }
+    }
+
+    /* Logo */
+    .logo-box {
+      width: 60px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .logo-box svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 20px rgba(255, 255, 255, 0.2));
+    }
+
+    /* Titles */
+    .title {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #FECDD3;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 5px 14px;
+      border-radius: 100px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 22px;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #E11D48;
+      box-shadow: 0 0 10px rgba(225, 29, 72, 0.4);
+    }
+
+    /* === TABS NAVIGATION (ONLY WHEN NOT INSTALLED) === */
+    .tabs-bar {
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 3px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 14px;
+      width: 100%;
+      max-width: 580px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #94a3b8;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    .tab-btn.active {
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    .tab-btn:hover:not(.active) {
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* Main Container Card */
+    .card-panel {
+      width: 100%;
+      max-width: 580px;
+      height: 310px;
+      background: rgba(10, 15, 24, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px 20px;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      margin-bottom: auto;
+      overflow-y: auto;
+    }
+
+    .tab-content {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+    }
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* Tab: Settings */
+    .setting-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .setting-label {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+    .setting-hint {
+      font-size: 11px;
+      color: #64748b;
+    }
+    .setting-input-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .setting-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #f1f5f9;
+      font-family: ui-monospace, Consolas, monospace;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .setting-input:focus {
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .check-row input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      background: rgba(0, 0, 0, 0.3);
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .check-row input[type="checkbox"]:checked {
+      background: #38bdf8;
+      border-color: #38bdf8;
+    }
+    .check-row input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 4px;
+      height: 8px;
+      border: solid #000;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .check-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .check-title {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #f1f5f9;
+    }
+    .check-desc {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* Tab: Modules Selection (4 requested items) */
+    .modules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .module-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .module-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .module-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 17px;
+      height: 17px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      background: rgba(0, 0, 0, 0.4);
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .module-checkbox:checked {
+      background: #38bdf8;
+      border-color: #38bdf8;
+    }
+    .module-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px;
+      top: 2px;
+      width: 4px;
+      height: 8px;
+      border: solid #000;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .module-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .module-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #f1f5f9;
+      letter-spacing: -0.1px;
+    }
+    .module-sub {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.3;
+    }
+
+    /* Actions Area & Buttons */
+    .actions-box {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-action {
+      position: relative;
+      width: 100%;
+      height: 52px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.92) 100%);
+      color: #FFFFFF;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+      transition: filter 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+      backdrop-filter: blur(12px);
+    }
+    .btn-action:hover {
+      filter: brightness(1.15);
+      border-color: rgba(255, 255, 255, 0.32);
+    }
+    .btn-action:active {
+      transform: scale(0.99);
+      filter: brightness(0.96);
+    }
+
+    .btn-delete {
+      width: 100%;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      background: rgba(239, 68, 68, 0.06);
+      color: #f87171;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+    .btn-delete:active {
+      transform: scale(0.99);
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      bottom: 84px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-root">
+    <!-- Custom Draggable Titlebar -->
+    <div class="titlebar">
+      <span class="titlebar-title">Antigravity ModLoader</span>
+      <div class="titlebar-controls">
+        <button class="ctrl-btn" onclick="windowIpc('minimize')" title="Свернуть">
+          <svg viewBox="0 0 12 12"><path d="M2 6h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </button>
+        <button class="ctrl-btn ctrl-close" onclick="windowIpc('close')" title="Закрыть">
+          <svg viewBox="0 0 12 12"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- EXACT FIGMA SVG WAVES -->
+    <svg width="100%" height="100%" viewBox="0 0 761 895" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" class="bg-svg">
+      <defs>
+        <clipPath id="clip1">
+          <path d="M0 0L761 0L761 895L0 895Z"/>
+        </clipPath>
+        <filter id="filter2" filterUnits="userSpaceOnUse" x="-242.74" y="112" width="1245.74" height="1011.011" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="34" result="l0"/>
+          <feMerge><feMergeNode in="l0"/></feMerge>
+        </filter>
+        <filter id="filter3" filterUnits="userSpaceOnUse" x="-242" y="193" width="1245.74" height="1011.011" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="34" result="l0"/>
+          <feMerge><feMergeNode in="l0"/></feMerge>
+        </filter>
+        <filter id="filter4" filterUnits="userSpaceOnUse" x="-242.74" y="254" width="1245.74" height="1011.011" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="34" result="l0"/>
+          <feMerge><feMergeNode in="l0"/></feMerge>
+        </filter>
+      </defs>
+
+      <path d="M0 0L761 0L761 895L0 895Z" fill="#02060B"/>
+
+      <g filter="url(#filter2)" clip-path="url(#clip1)">
+        <path class="wave-anim-1" d="M0 527L0 196L70 246L255 150C255 150 319.936 250.221 320 246C320.064 241.779 450 313 450 313L590 0C590 0 758.435 159.565 761 156.5C763.565 153.435 758.435 529.345 761 527C763.565 524.655 0 527 0 527Z" fill="#004686"/>
+        <path class="wave-anim-1" d="M0 527L0 196L70 246L255 150C255 150 319.936 250.221 320 246C320.064 241.779 450 313 450 313L590 0C590 0 758.435 159.565 761 156.5C763.565 153.435 758.435 529.345 761 527C763.565 524.655 0 527 0 527Z" fill="none" stroke="#000000" stroke-width="1"/>
+      </g>
+
+      <g filter="url(#filter3)" clip-path="url(#clip1)">
+        <path class="wave-anim-2" d="M0 527L0 196L70 246L255 150C255 150 319.936 250.221 320 246C320.064 241.779 450 313 450 313L590 0C590 0 758.435 159.565 761 156.5C763.565 153.435 758.435 529.345 761 527C763.565 524.655 0 527 0 527Z" fill="#0688FF"/>
+        <path class="wave-anim-2" d="M0 527L0 196L70 246L255 150C255 150 319.936 250.221 320 246C320.064 241.779 450 313 450 313L590 0C590 0 758.435 159.565 761 156.5C763.565 153.435 758.435 529.345 761 527C763.565 524.655 0 527 0 527Z" fill="none" stroke="#000000" stroke-width="1"/>
+      </g>
+
+      <g filter="url(#filter4)" clip-path="url(#clip1)">
+        <path class="wave-anim-3" d="M0 527L0 196L70 246L255 150C255 150 319.936 250.221 320 246C320.064 241.779 450 313 450 313L590 0C590 0 758.435 159.565 761 156.5C763.565 153.435 758.435 529.345 761 527C763.565 524.655 0 527 0 527Z" fill="#9BC9FF"/>
+        <path class="wave-anim-3" d="M0 527L0 196L70 246L255 150C255 150 319.936 250.221 320 246C320.064 241.779 450 313 450 313L590 0C590 0 758.435 159.565 761 156.5C763.565 153.435 758.435 529.345 761 527C763.565 524.655 0 527 0 527Z" fill="none" stroke="#000000" stroke-width="1"/>
+      </g>
+    </svg>
+
+    <!-- Foreground Content -->
+    <div class="content">
+      <!-- 1. Logo -->
+      <div class="logo-box anim-in del-1">
+        <svg viewBox="0 0 94 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M83.985 83.425C89.158 87.306 96.919 84.719 89.805 77.605C68.464 56.911 72.99 0 46.475 0C19.96 0 24.487 56.911 3.146 77.605C-4.615 85.366 3.792 87.306 8.966 83.425C29.014 69.845 27.721 45.916 46.475 45.916C65.23 45.916 63.936 69.845 83.985 83.425Z" fill="#FFFFFF"/>
+        </svg>
+      </div>
+
+      <!-- 2. Title -->
+      <h1 class="title anim-in del-2">Antigravity ModLoader</h1>
+
+      <!-- 3. Status Badge -->
+      <div class="status-badge anim-in del-3">
+        <span class="status-dot"></span>
+        <span id="statusLabel">Не установлен</span>
+      </div>
+
+      <!-- 4. Tabs & Panel -->
+      
+      <div class="tabs-bar anim-in del-3">
+        <button class="tab-btn active" onclick="switchTab('tab-modules', this)">Вшитые модули</button>
+        <button class="tab-btn" onclick="switchTab('tab-settings', this)">Настройки установки</button>
+      </div>
+
+      <div class="card-panel anim-in del-4">
+        
+        <!-- TAB 1: MODULES SELECTION (When NOT installed) -->
+        <div class="tab-content active" id="tab-modules">
+          <div class="modules-list">
+            <label class="module-item">
+              <input type="checkbox" class="module-checkbox" id="mod-geo" checked>
+              <div class="module-text">
+                <span class="module-label">Снять гео блок</span>
+                <span class="module-sub">DoH/DoT прокси без прав администратора и без .bat скриптов</span>
+              </div>
+            </label>
+
+            <label class="module-item">
+              <input type="checkbox" class="module-checkbox" id="mod-radar" checked>
+              <div class="module-text">
+                <span class="module-label">Отображение контекстного окна</span>
+                <span class="module-sub">Live Context Radar с расходом токенов у селектора модели</span>
+              </div>
+            </label>
+
+            <label class="module-item">
+              <input type="checkbox" class="module-checkbox" id="mod-switcher" checked>
+              <div class="module-text">
+                <span class="module-label">Сваппер аккаунтов</span>
+                <span class="module-sub">Быстрое переключение Google-аккаунтов в 1 клик</span>
+              </div>
+            </label>
+
+            <label class="module-item">
+              <input type="checkbox" class="module-checkbox" id="mod-f12" checked>
+              <div class="module-text">
+                <span class="module-label">Разрешить F12</span>
+                <span class="module-sub">Разблокировка консоли разработчика и инспектора интерфейса</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <!-- TAB 2: SETTINGS (When NOT installed) -->
+        <div class="tab-content" id="tab-settings">
+          <div class="setting-group">
+            <label class="setting-label">Путь к app.asar</label>
+            <div class="setting-input-wrap">
+              <input type="text" class="setting-input" id="customAsarPath" value="C:\Users\ttt79\AppData\Local\Programs\antigravity\resources\app.asar" spellcheck="false">
+            </div>
+            <span class="setting-hint">Определен автоматически из установленной копии Antigravity</span>
+          </div>
+
+          <label class="check-row">
+            <input type="checkbox" id="opt-backup" checked>
+            <div class="check-text">
+              <span class="check-title">Создавать резервную копию (app.asar.original)</span>
+              <span class="check-desc">Позволяет мгновенно восстановить чистую стоковую версию</span>
+            </div>
+          </label>
+
+          <label class="check-row">
+            <input type="checkbox" id="opt-autorun" checked>
+            <div class="check-text">
+              <span class="check-title">Автоматически запускать инжектор</span>
+              <span class="check-desc">Прозрачная загрузка модулей при каждом старте Antigravity</span>
+            </div>
+          </label>
+        </div>
+        
+      </div>
+
+      <!-- 5. Actions Area -->
+      <div class="actions-box anim-in del-5">
+        
+        <button class="btn-action" id="actionBtn" onclick="triggerAction('install')">
+          <span id="btnLabel">Установить ModLoader</span>
+        </button>
+        
+      </div>
+
+      <div id="toast" class="toast">Готово</div>
+    </div>
+  </div>
+
+  <script>
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+    }
+
+    function showToast(msg, isErr) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.borderColor = isErr ? 'rgba(239, 68, 68, 0.5)' : 'rgba(16, 185, 129, 0.5)';
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    function windowIpc(cmd) {
+      if (window.ipc) {
+        window.ipc.postMessage(JSON.stringify({ action: cmd }));
+      }
+    }
+
+    async function triggerAction(action) {
+      const btn = document.getElementById('actionBtn');
+      const label = document.getElementById('btnLabel');
+      const prev = label ? label.textContent : '';
+      if (label) label.textContent = 'Обработка...';
+      if (btn) btn.style.pointerEvents = 'none';
+
+      const geo = document.getElementById('mod-geo') ? document.getElementById('mod-geo').checked : true;
+      const radar = document.getElementById('mod-radar') ? document.getElementById('mod-radar').checked : true;
+      const switcher = document.getElementById('mod-switcher') ? document.getElementById('mod-switcher').checked : true;
+      const f12 = document.getElementById('mod-f12') ? document.getElementById('mod-f12').checked : true;
+      const customPath = document.getElementById('customAsarPath') ? document.getElementById('customAsarPath').value : '';
+
+      const payload = {
+        action: action,
+        geo: geo,
+        radar: radar,
+        switcher: switcher,
+        f12: f12,
+        customPath: customPath
+      };
+
+      if (window.ipc) {
+        window.ipc.postMessage(JSON.stringify(payload));
+      } else {
+        setTimeout(() => {
+          showToast(action === 'uninstall' ? 'Модлоадер успешно удален' : 'Успешно установлено', false);
+          if (label) label.textContent = prev;
+          if (btn) btn.style.pointerEvents = 'auto';
+        }, 600);
+      }
+    }
+
+    window.onIpcResponse = function(success, message) {
+      showToast(message, !success);
+      setTimeout(() => location.reload(), 1400);
+    };
+  </script>
+</body>
+</html>

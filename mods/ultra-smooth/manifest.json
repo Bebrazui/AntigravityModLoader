@@ -1,0 +1,11 @@
+{
+  "id": "ultra-smooth",
+  "name": "Ultra Smooth UI",
+  "version": "1.3.0",
+  "author": "ttt79",
+  "description": "Чистые нативные микро-анимации интерфейса (кнопки, фокус, появление окон, плавный скролл)",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ]
+}

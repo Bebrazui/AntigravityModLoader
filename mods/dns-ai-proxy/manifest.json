@@ -1,0 +1,23 @@
+{
+  "id": "dns-ai-proxy",
+  "name": "DNS-AI Proxy & Geo-Unblock",
+  "description": "Встроенный HTTP CONNECT прокси с DNS-over-HTTPS (cf.dns-ai.ru) и DoT (dns.dns-ai.ru) для обхода геоблокировок Google Cloud Code и 400 ошибок без внешних лаунчеров и bat-файлов.",
+  "version": "1.0.0",
+  "author": "Antigravity Mods",
+  "settings": {
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "title": "Включить автоматический прокси"
+    },
+    "port": {
+      "type": "number",
+      "default": 53129,
+      "title": "Локальный порт прокси"
+    }
+  },
+  "entry": {
+    "main": "main.js",
+    "renderer": "renderer.js"
+  }
+}

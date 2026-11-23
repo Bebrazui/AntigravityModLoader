@@ -1,0 +1,26 @@
+{
+  "id": "deep-inspector",
+  "name": "Deep Inspector & Prompt Lens",
+  "version": "1.0.0",
+  "author": "ttt79",
+  "description": "Окно полного рентгена сессии: системные промты, активные правила, навыки, полные логи мыслей, вызовы инструментов и сырые шаги модели",
+  "main": "main.js",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ],
+  "settings": {
+    "autoRefresh": {
+      "title": "Автообновление потока",
+      "description": "Автоматически подтягивать новые шаги и ответы модели в реальном времени",
+      "type": "boolean",
+      "default": true
+    },
+    "showToolPayloads": {
+      "title": "Показывать полные данные инструментов",
+      "description": "Отображать полные аргументы и вывод команд терминала/файлов",
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

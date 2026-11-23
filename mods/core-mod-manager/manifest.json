@@ -1,0 +1,12 @@
+{
+  "id": "core-mod-manager",
+  "name": "Mod Manager",
+  "version": "1.0.0",
+  "author": "Antigravity Community",
+  "description": "Core built-in Mod Manager. Adds Mods tab to sidebar and provides GUI for enabling/disabling and managing mods.",
+  "main": "main.js",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ]
+}

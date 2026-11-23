@@ -1,0 +1,50 @@
+# Logs & Runtime caches
+*.log
+*cache*.json
+model-last-error.json
+autopatch_meta.json
+custom_path.txt
+accounts/
+temp_asar/
+
+# Temporary scratch scripts & artifacts
+*.png
+*.jpg
+*.svg
+analyze_svg.js
+build_figma_template.js
+clean_ui_plan.js
+debug_html.js
+embed_loader_dll.js
+extract_svg_assets.js
+fix_arc_window.js
+gen_*.js
+get_filters.js
+inspect_*.js
+map_layers.js
+pack_payload.js
+parse_*.js
+patch_rust_main.js
+prepare_*.js
+print_raw_waves.js
+save_*.js
+screenshot_*.js
+slice_template.js
+take_screenshot.js
+template_*.txt
+test_installed_view.js
+update_ipc_rs.js
+
+# Rust build artifacts
+target/
+installer-rs/target/
+installer-rs/bundle/stage/
+*.b64
+*.WebView2/
+dist/*.WebView2/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

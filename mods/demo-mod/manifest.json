@@ -1,0 +1,12 @@
+{
+  "id": "demo-mod",
+  "name": "Demo mod",
+  "version": "1.0.0",
+  "author": "ttt79",
+  "description": "Custom mod for Antigravity",
+  "main": "main.js",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ]
+}

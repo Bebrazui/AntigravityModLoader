@@ -1,0 +1,81 @@
+/* Styles for Proxy & DNS Tunnel */
+.agy-proxy-indicator {
+  position: fixed;
+  bottom: 12px;
+  right: 68px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(20, 20, 24, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 3px 6px;
+  cursor: pointer;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #A1A1AA;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.agy-proxy-indicator:hover {
+  background: rgba(32, 32, 38, 0.95);
+  border-color: rgba(255, 255, 255, 0.2);
+  opacity: 1 !important;
+}
+
+.agy-net-badges {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.agy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #71717A;
+  transition: all 0.2s ease;
+}
+
+.agy-badge .agy-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #52525B;
+  transition: all 0.2s ease;
+}
+
+/* Active State */
+.agy-badge[data-active="true"] {
+  color: #E4E4E7;
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.agy-badge[data-active="true"] .agy-dot {
+  background: #3B82F6;
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
+}
+
+/* State overrides: online / error */
+.agy-badge[data-state="online"] .agy-dot {
+  background: #10B981 !important;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.8) !important;
+}
+
+.agy-badge[data-state="error"] .agy-dot {
+  background: #EF4444 !important;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.8) !important;
+}
+
+.agy-badge[data-state="testing"] .agy-dot {
+  background: #F59E0B !important;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.8) !important;
+}

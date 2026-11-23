@@ -1,0 +1,31 @@
+{
+  "enabled": true,
+  "disabledMods": [
+    "demo-mod",
+    "prompt-enhancer",
+    "smooth-fonts",
+    "sound-effects",
+    "deep-inspector",
+    "proxy-tunnel",
+    "arch-mode"
+  ],
+  "modSettings": {
+    "proxy-tunnel": {
+      "enabled": true,
+      "enableProxy": true,
+      "proxyType": "http",
+      "proxyHost": "127.0.0.1",
+      "proxyPort": 10808,
+      "bypassRules": "<local>, 127.0.0.1, localhost, 127.0.0.1:10808",
+      "enableDns": true,
+      "dnsServers": "193.233.112.67, 193.233.112.68",
+      "ignoreSystemVpn": false
+    },
+    "clear-model-errors": {
+      "style": "short"
+    },
+    "account-switcher": {
+      "openInBrowser": true
+    }
+  }
+}

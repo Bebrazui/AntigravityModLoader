@@ -1,0 +1,8 @@
+{
+  "id": "sound-effects",
+  "name": "Audio Feedback (Sound Effects)",
+  "version": "1.0.0",
+  "author": "Antigravity Modder",
+  "description": "Plays subtle premium audio clicks when sending messages or switching projects, and a pleasant chime when the agent finishes generating code.",
+  "renderer": "renderer.js"
+}

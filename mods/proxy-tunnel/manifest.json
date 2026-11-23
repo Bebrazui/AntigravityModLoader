@@ -1,0 +1,70 @@
+{
+  "id": "proxy-tunnel",
+  "name": "Proxy & DNS Tunnel",
+  "version": "1.2.0",
+  "author": "ttt79",
+  "description": "Маршрутизация сетевого трафика Antigravity (Proxy, кастомный DNS, обход системного VPN)",
+  "main": "main.js",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ],
+  "settings": {
+    "enableProxy": {
+      "title": "Включить Proxy",
+      "description": "Перенаправлять трафик через указанный прокси-сервер",
+      "type": "boolean",
+      "default": false
+    },
+    "proxyType": {
+      "title": "Тип Proxy",
+      "description": "Протокол прокси-сервера",
+      "type": "select",
+      "default": "socks5",
+      "options": [
+        { "value": "socks5", "label": "SOCKS5" },
+        { "value": "http", "label": "HTTP" },
+        { "value": "https", "label": "HTTPS" },
+        { "value": "direct", "label": "Direct (Без прокси)" }
+      ]
+    },
+    "proxyHost": {
+      "title": "Proxy Хост / IP",
+      "description": "Адрес прокси-сервера (например: 127.0.0.1 или внешний IP)",
+      "type": "text",
+      "default": "127.0.0.1"
+    },
+    "proxyPort": {
+      "title": "Proxy Порт",
+      "description": "Порт прокси-сервера (например: 1080, 2080, 8080)",
+      "type": "number",
+      "default": 1080,
+      "min": 1,
+      "max": 65535
+    },
+    "bypassRules": {
+      "title": "Исключения Proxy (Bypass)",
+      "description": "Адреса в обход прокси через запятую (например: <local>, 127.0.0.1)",
+      "type": "text",
+      "default": "<local>, 127.0.0.1"
+    },
+    "ignoreSystemVpn": {
+      "title": "Игнорировать системный VPN (Bypass VPN)",
+      "description": "Принудительно направлять трафик через физический сетевой шлюз (Wi-Fi/Ethernet), минуя TUN/VPN адаптеры",
+      "type": "boolean",
+      "default": false
+    },
+    "enableDns": {
+      "title": "Включить кастомный DNS",
+      "description": "Использовать указанные DNS серверы для разрешения доменов (минуя DNS от VPN)",
+      "type": "boolean",
+      "default": false
+    },
+    "dnsServers": {
+      "title": "DNS Серверы",
+      "description": "IP адреса DNS через запятую (Cloudflare: 1.1.1.1, Google: 8.8.8.8, Quad9: 9.9.9.9)",
+      "type": "text",
+      "default": "1.1.1.1, 1.0.0.1"
+    }
+  }
+}

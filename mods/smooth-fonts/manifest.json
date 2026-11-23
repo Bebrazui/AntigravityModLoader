@@ -1,0 +1,10 @@
+{
+  "id": "smooth-fonts",
+  "name": "Custom Fonts & OLED Black",
+  "version": "1.0.0",
+  "author": "Antigravity Modder",
+  "description": "Replaces UI fonts with JetBrains Mono / Inter and enables true AMOLED pure black theme with soft glow accents.",
+  "styles": [
+    "style.css"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "id": "ls-proxy",
+  "name": "LS Proxy (AG_LS_PROXY)",
+  "version": "1.0.0",
+  "author": "ttt79",
+  "description": "Прокидывает AG_LS_PROXY/HTTPS_PROXY в окружение language_server, чтобы весь трафик Cloud Code шёл через локальный DNS-прокси, а не напрямую по системному DNS.",
+  "main": "main.js"
+}

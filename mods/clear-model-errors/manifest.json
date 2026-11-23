@@ -1,0 +1,39 @@
+{
+  "id": "clear-model-errors",
+  "name": "Понятные ошибки модели",
+  "version": "1.2.0",
+  "author": "ttt79",
+  "description": "Показывает реальную причину вместо 'Model unavailable': HTTP-код (429/502/503/404), TCP reset, таймаут или DNS — из лога language server.",
+  "main": "main.js",
+  "renderer": "renderer.js",
+  "settings": [
+    {
+      "id": "style",
+      "label": "Длина текста",
+      "type": "select",
+      "default": "short",
+      "options": [
+        { "value": "short", "label": "Коротко: «Модель не ответила — повтор через 4 с (попытка 1 из 9)»" },
+        { "value": "full", "label": "Подробно: с пояснением, что это обрыв связи, а не лимиты" }
+      ]
+    },
+    {
+      "id": "hintFromAttempt",
+      "label": "С какой попытки добавлять подсказку про прокси/маршрут",
+      "type": "number",
+      "default": 3
+    },
+    {
+      "id": "tooltipOriginal",
+      "label": "Показывать оригинальный текст в подсказке при наведении",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "id": "consoleLog",
+      "label": "Писать замены в консоль DevTools",
+      "type": "boolean",
+      "default": false
+    }
+  ]
+}

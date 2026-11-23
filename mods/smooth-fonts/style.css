@@ -1,0 +1,42 @@
+/* Deep OLED Black & Clean Typography Mod */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace !important;
+}
+
+body, html, * {
+  font-family: 'JetBrains Mono', -apple-system, BlinkMacSystemFont, monospace !important;
+}
+
+/* Make backgrounds pure AMOLED Black */
+body, aside, nav, .sidebar {
+  background-color: #050505 !important;
+}
+
+/* Premium micro-contrast borders */
+aside, nav, .sidebar, div[role="navigation"] {
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Subtle glowing accent on active conversation or active tab */
+.active, [aria-selected="true"] {
+  border-left: 2px solid #60A5FA !important;
+  background: rgba(96, 165, 250, 0.08) !important;
+}
+
+/* Sleek minimalist scrollbar */
+::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-radius: 10px !important;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+}

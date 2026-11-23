@@ -1,0 +1,6 @@
+/* Custom UI styles for Antigravity */
+/* Example: Custom scrollbar or subtle accent colors */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 4px;
+}

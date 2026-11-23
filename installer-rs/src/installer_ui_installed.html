@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Antigravity ModLoader</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    *::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    *::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    *::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 4px;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #02060B;
+      color: #FFFFFF;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .app-root {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      background: #02060B;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+    }
+
+    /* === TITLEBAR === */
+    .titlebar {
+      position: relative;
+      z-index: 50;
+      height: 36px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      background: transparent;
+      -webkit-app-region: drag;
+    }
+
+    .titlebar-title {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #64748b;
+      letter-spacing: 0.2px;
+    }
+
+    .titlebar-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+
+    .ctrl-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      padding: 0;
+    }
+    .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #FFFFFF;
+    }
+    .ctrl-close:hover {
+      background: #ef4444 !important;
+      color: #FFFFFF !important;
+    }
+    .ctrl-btn svg {
+      width: 11px;
+      height: 11px;
+    }
+
+    /* === BACKGROUND WAVES === */
+    .bg-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .wave-anim-1 {
+      transform-origin: 380px 850px;
+      animation: gentleWave1 12s ease-in-out infinite alternate;
+    }
+    .wave-anim-2 {
+      transform-origin: 380px 850px;
+      animation: gentleWave2 9s ease-in-out infinite alternate;
+    }
+    .wave-anim-3 {
+      transform-origin: 380px 850px;
+      animation: gentleWave3 7s ease-in-out infinite alternate;
+    }
+
+    @keyframes gentleWave1 {
+      0% { transform: translate(-0.74px, 354px) scaleY(1) skewX(0); }
+      50% { transform: translate(-0.74px, 360px) scaleY(0.97) skewX(1deg); }
+      100% { transform: translate(-0.74px, 348px) scaleY(1.02) skewX(-0.8deg); }
+    }
+    @keyframes gentleWave2 {
+      0% { transform: translate(0px, 435px) scaleY(1) skewX(0); }
+      50% { transform: translate(0px, 442px) scaleY(0.96) skewX(-1.2deg); }
+      100% { transform: translate(0px, 428px) scaleY(1.03) skewX(1deg); }
+    }
+    @keyframes gentleWave3 {
+      0% { transform: translate(-0.74px, 496px) scaleY(1); }
+      50% { transform: translate(-0.74px, 504px) scaleY(0.95); }
+      100% { transform: translate(-0.74px, 490px) scaleY(1.02); }
+    }
+
+    /* === CONTENT AREA (COMPACT & BALANCED) === */
+    .content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: calc(100% - 36px);
+      padding: 12px 34px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .anim-in {
+      opacity: 0;
+      animation: smoothEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .del-1 { animation-delay: 0.04s; }
+    .del-2 { animation-delay: 0.09s; }
+    .del-3 { animation-delay: 0.14s; }
+    .del-4 { animation-delay: 0.20s; }
+    .del-5 { animation-delay: 0.26s; }
+
+    @keyframes smoothEntrance {
+      0% {
+        opacity: 0;
+        filter: blur(10px);
+        transform: translateY(12px);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0);
+      }
+    }
+
+    /* Logo */
+    .logo-box {
+      width: 44px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .logo-box svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 4px 16px rgba(255, 255, 255, 0.18));
+    }
+
+    /* Header text */
+    .title {
+      font-size: 21px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #A7F3D0;
+      background: rgba(16, 185, 129, 0.08);
+      padding: 4px 12px;
+      border-radius: 100px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      margin-bottom: 14px;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+    }
+
+    /* Main Container Card */
+    .card-panel {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(10, 15, 24, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px 16px;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .metric-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .metric-name {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .metric-val {
+      font-size: 12px;
+      font-weight: 500;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .dot-green {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10B981;
+      flex-shrink: 0;
+    }
+
+    /* Path banner */
+    .path-row {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .path-text {
+      font-size: 11px;
+      color: #94a3b8;
+      font-family: ui-monospace, Consolas, monospace;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .path-tag {
+      font-size: 10px;
+      font-weight: 600;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* Mod chips row */
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .chip {
+      font-size: 11px;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .chip span {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #10B981;
+    }
+
+    /* Quick Tools Bar */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #cbd5e1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: #FFFFFF;
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    .tool-btn svg {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+    }
+
+    /* Actions Area & Buttons */
+    .actions-box {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .btn-action {
+      position: relative;
+      width: 100%;
+      height: 44px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.92) 100%);
+      color: #FFFFFF;
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+      transition: filter 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+      backdrop-filter: blur(12px);
+    }
+    .btn-action:hover {
+      filter: brightness(1.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .btn-action:active {
+      transform: scale(0.99);
+      filter: brightness(0.96);
+    }
+
+    .btn-delete {
+      width: 100%;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid rgba(239, 68, 68, 0.65);
+      background: linear-gradient(180deg, rgba(220, 38, 38, 0.45) 0%, rgba(153, 27, 27, 0.6) 100%);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+    .btn-delete svg {
+      width: 14px;
+      height: 14px;
+      stroke: #FFFFFF;
+      flex-shrink: 0;
+    }
+    .btn-delete:hover {
+      background: linear-gradient(180deg, rgba(239, 68, 68, 0.65) 0%, rgba(185, 28, 28, 0.8) 100%);
+      border-color: #EF4444;
+      color: #FFFFFF;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.5), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+      transform: translateY(-1px);
+    }
+    .btn-delete:active {
+      transform: translateY(0) scale(0.99);
+      background: rgba(185, 28, 28, 0.6);
+    }
+
+    /* Toast */
+    .toast {
+      position: absolute;
+      bottom: 74px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.8);
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-root">
+    <!-- Custom Draggable Titlebar -->
+    <div class="titlebar">
+      <span class="titlebar-title">Antigravity ModLoader</span>
+      <div class="titlebar-controls">
+        <button class="ctrl-btn" onclick="windowIpc('minimize')" title="Свернуть">
+          <svg viewBox="0 0 12 12"><path d="M2 6h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </button>
+        <button class="ctrl-btn ctrl-close" onclick="windowIpc('close')" title="Закрыть">
+          <svg viewBox="0 0 12 12"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- BACKGROUND WAVES -->
+    <svg width="100%" height="100%" viewBox="0 0 761 895" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg" class="bg-svg">
+      <defs>
+        <clipPath id="clip1">
+          <path d="M0 0L761 0L761 895L0 895Z"/>
+        </clipPath>
+        <filter id="filter2" filterUnits="userSpaceOnUse" x="-242.74" y="112" width="1245.74" height="1011.011" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="34" result="l0"/>
+          <feMerge><feMergeNode in="l0"/></feMerge>
+        </filter>
+        <linearGradient id="paint_grad1" x1="0" y1="0" x2="761" y2="895" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#02060B"/>
+          <stop offset="60%" stop-color="#02060B"/>
+          <stop offset="100%" stop-color="#0A1828"/>
+        </linearGradient>
+      </defs>
+      <g clip-path="url(#clip1)">
+        <rect width="761" height="895" fill="url(#paint_grad1)"/>
+        <g filter="url(#filter2)">
+          <path class="wave-anim-1" d="M380.13 607.72C244.954 607.72 119.864 577.636 -0.740234 525.688L-0.740234 895L761 895L761 525.688C640.396 577.636 515.306 607.72 380.13 607.72Z" fill="#1C5EAE" fill-opacity="0.32"/>
+          <path class="wave-anim-2" d="M380.87 634.613C245.422 634.613 120.086 597.234 0 532.688L0 895L761 895L761 532.688C640.914 597.234 515.578 634.613 380.87 634.613Z" fill="#2E79D8" fill-opacity="0.5"/>
+          <path class="wave-anim-3" d="M380.13 656.72C244.954 656.72 119.864 626.636 -0.740234 574.688L-0.740234 895L761 895L761 574.688C640.396 626.636 515.306 656.72 380.13 656.72Z" fill="#4B9BF7" fill-opacity="0.45"/>
+        </g>
+      </g>
+    </svg>
+
+    <!-- FOREGROUND CONTENT -->
+    <div class="content">
+
+      <!-- 1. Logo -->
+      <div class="logo-box anim-in del-1">
+        <svg viewBox="0 0 94 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M83.985 83.425C89.158 87.306 96.919 84.719 89.805 77.605C68.464 56.911 72.99 0 46.475 0C19.96 0 24.487 56.911 3.146 77.605C-4.615 85.366 3.792 87.306 8.966 83.425C29.014 69.845 27.721 45.916 46.475 45.916C65.23 45.916 63.936 69.845 83.985 83.425Z" fill="#FFFFFF"/>
+        </svg>
+      </div>
+
+      <!-- 2. Header Text -->
+      <h1 class="title anim-in del-2">Antigravity ModLoader</h1>
+
+      <!-- 3. Status Badge -->
+      <div class="status-badge anim-in del-3">
+        <span class="status-dot"></span>
+        <span id="statusLabel">Модлоадер установлен</span>
+      </div>
+
+      <!-- 4. Dashboard Card -->
+      <div class="card-panel anim-in del-4">
+        
+        <div class="section-title">
+          <span>Сводка окружения</span>
+          <span style="color:#10B981; font-weight:500;">Патч активен</span>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-name">DNS / DoH Прокси</span>
+            <span class="metric-val"><span class="dot-green"></span>31.58.216.201 NL</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-name">DevTools F12</span>
+            <span class="metric-val"><span class="dot-green"></span>Разрешено</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-name">Live Context Radar</span>
+            <span class="metric-val"><span class="dot-green"></span>Внедрен</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-name">Бэкап app.asar</span>
+            <span class="metric-val"><span class="dot-green"></span>Сохранен</span>
+          </div>
+        </div>
+
+        <div class="path-row">
+          <span class="path-text">resources/app.asar</span>
+          <span class="path-tag">ИНЖЕКЦИЯ OK</span>
+        </div>
+
+        <div class="section-title" style="margin-top:2px;">
+          <span>Активные моды</span>
+        </div>
+
+        <div class="chips-row">
+          <div class="chip"><span></span>Снятие геоблока</div>
+          <div class="chip"><span></span>Контекстное окно</div>
+          <div class="chip"><span></span>Сваппер аккаунтов</div>
+          <div class="chip"><span></span>F12 Отладка</div>
+        </div>
+
+        <div class="tools-grid" style="margin-top:2px;">
+          <button class="tool-btn" onclick="windowIpc('explore_mods')" title="Открыть каталог установленных модов">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Папка модов
+          </button>
+          <button class="tool-btn" onclick="windowIpc('launch_app')" title="Запустить Antigravity">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Запустить IDE
+          </button>
+        </div>
+
+      </div>
+
+      <!-- 5. Actions Area -->
+      <div class="actions-box anim-in del-5">
+        <button class="btn-action" id="actionBtn" onclick="triggerAction('install')">
+          <span id="btnLabel">Переустановить</span>
+        </button>
+        <button class="btn-delete" onclick="triggerAction('uninstall')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          Удалить модлодер
+        </button>
+      </div>
+
+      <div id="toast" class="toast">Готово</div>
+    </div>
+  </div>
+
+  <script>
+    function showToast(msg, isErr) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.borderColor = isErr ? 'rgba(239, 68, 68, 0.5)' : 'rgba(16, 185, 129, 0.5)';
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    function windowIpc(cmd) {
+      if (window.ipc) {
+        window.ipc.postMessage(JSON.stringify({ action: cmd }));
+      }
+    }
+
+    async function triggerAction(action) {
+      const btn = document.getElementById('actionBtn');
+      const label = document.getElementById('btnLabel');
+      const prev = label ? label.textContent : '';
+      if (label) label.textContent = 'Обработка...';
+      if (btn) btn.style.pointerEvents = 'none';
+
+      const payload = { action: action };
+
+      if (window.ipc) {
+        window.ipc.postMessage(JSON.stringify(payload));
+      } else {
+        setTimeout(() => {
+          showToast(action === 'uninstall' ? 'Модлоадер успешно удален' : 'Успешно переустановлено', false);
+          if (label) label.textContent = prev;
+          if (btn) btn.style.pointerEvents = 'auto';
+        }, 600);
+      }
+    }
+
+    window.onIpcResponse = function(success, message) {
+      showToast(message, !success);
+      setTimeout(() => location.reload(), 1400);
+    };
+  </script>
+</body>
+</html>

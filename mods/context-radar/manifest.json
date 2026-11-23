@@ -1,0 +1,30 @@
+{
+  "id": "context-radar",
+  "name": "Live Context Radar",
+  "version": "1.0.0",
+  "author": "Antigravity Modder",
+  "description": "Displays live real context window token meter next to the model selection dropdown with circular progress ring and hover tooltip breakdown.",
+  "main": "main.js",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ],
+  "settings": [
+    {
+      "id": "displayMode",
+      "label": "Формат счетчика",
+      "type": "select",
+      "default": "tokens",
+      "options": [
+        { "value": "tokens", "label": "Токены (например: 12k)" },
+        { "value": "percent", "label": "Проценты (например: 1.2%)" }
+      ]
+    },
+    {
+      "id": "showTooltip",
+      "label": "Показывать подробный тултип",
+      "type": "boolean",
+      "default": true
+    }
+  ]
+}

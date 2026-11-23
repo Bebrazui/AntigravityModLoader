@@ -1,0 +1,44 @@
+{
+  "id": "f12-devtools",
+  "name": "F12 DevTools",
+  "version": "1.0.0",
+  "author": "ttt79",
+  "description": "Мгновенное открытие и переключение консоли разработчика Chrome DevTools по нажатию клавиши F12 или Ctrl+Shift+I",
+  "main": "main.js",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ],
+  "settings": {
+    "enabled": {
+      "title": "Включить перехват клавиш",
+      "description": "Переключать DevTools при нажатии F12",
+      "type": "boolean",
+      "default": true
+    },
+    "mode": {
+      "title": "Позиция DevTools",
+      "description": "В каком виде открывать окно инструментов разработчика",
+      "type": "select",
+      "default": "detach",
+      "options": [
+        { "value": "detach", "label": "Отдельное окно (Detach)" },
+        { "value": "right", "label": "Прикреплено справа (Right)" },
+        { "value": "bottom", "label": "Прикреплено снизу (Bottom)" },
+        { "value": "undocked", "label": "Плавающее (Undocked)" }
+      ]
+    },
+    "ctrlShiftI": {
+      "title": "Поддержка Ctrl+Shift+I",
+      "description": "Также открывать DevTools по стандартной комбинации Ctrl+Shift+I",
+      "type": "boolean",
+      "default": true
+    },
+    "showToast": {
+      "title": "Уведомление в интерфейсе",
+      "description": "Показывать аккуратную всплывающую плашку при переключении DevTools",
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

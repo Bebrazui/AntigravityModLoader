@@ -1,0 +1,11 @@
+{
+  "id": "russian-ui",
+  "name": "Русский интерфейс",
+  "version": "2.6.0",
+  "author": "ttt79",
+  "description": "Перевод интерфейса Antigravity на русский ЦЕЛЫМИ строками, синхронно до отрисовки кадра (без видимой подмены текста). Ctrl+Alt+T — вкл/выкл, Ctrl+Alt+U — сбор непереведённых строк.",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ]
+}

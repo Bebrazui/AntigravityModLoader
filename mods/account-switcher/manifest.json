@@ -1,0 +1,18 @@
+{
+  "id": "account-switcher",
+  "name": "Quick Account Switcher",
+  "description": "Быстрое переключение между аккаунтами Google в один клик прямо из сайдбара над кнопкой Настройки.",
+  "version": "1.0.0",
+  "author": "Antigravity Dev",
+  "settings": {
+    "openInBrowser": {
+      "type": "boolean",
+      "default": true,
+      "title": "Открывать вход в системном браузере"
+    }
+  },
+  "entry": {
+    "renderer": "renderer.js",
+    "main": "main.js"
+  }
+}

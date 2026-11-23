@@ -1,0 +1,32 @@
+/* Quick Action Pills styling */
+.agy-pills-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  overflow-x: auto;
+  user-select: none;
+}
+
+.agy-pills-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.agy-pill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #A1A1AA;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.agy-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}

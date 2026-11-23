@@ -1,0 +1,11 @@
+{
+  "id": "prompt-enhancer",
+  "name": "Quick Action Pills & Shortcuts",
+  "version": "1.0.0",
+  "author": "Antigravity Modder",
+  "description": "Adds one-click quick prompt pills above the chat input (e.g. 'Optimize', 'Explain', 'Fix Bugs', 'Write Tests') and extra keybindings.",
+  "renderer": "renderer.js",
+  "styles": [
+    "style.css"
+  ]
+}
