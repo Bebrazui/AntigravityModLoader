@@ -4,7 +4,7 @@
 
   const ICONS = {
     arrowLeft: `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>`,
-    puzzle: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16px" width="16px" fill="currentColor"><path d="M5,19H18V14.4l1.13-0.55q0.4-0.2 0.64-0.55T20,12.5q0-0.43-0.24-0.79t-0.64-0.56L18,10.63V6H13.2L12.95,4.3q-0.08-0.55-0.49-0.92T11.5,3q-0.57,0-0.99,0.38T10.03,4.3L9.78,6H5V8.15q1.4,0.53 2.2,1.7Q8,11.02 8,12.5Q8,14 7.2,15.18T5,16.88V19Zm0,2q-0.85,0-1.42-0.57T3,19V15.2q1.2,0 2.1-0.76T6,12.5q0-1.15-0.9-1.9T3,9.8V6Q3,5.18 3.59,4.59T5,4H8.05Q8.23,2.72 9.2,1.86T11.5,1q1.3,0 2.28,0.86T14.95,4H18q0.82,0 1.41,0.59Q20,5.18 20,6V9.35q0.9,0.45 1.45,1.3T22,12.5q0,1.02-0.55,1.88T20,15.65V19q0,0.85-0.59,1.43T18,21H5Zm7.5-8.5Z"/></svg>`,
+    puzzle: `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5s-1.12-2.5-2.5-2.5z"/></svg>`,
     folder: `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`,
     refresh: `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>`,
     gear: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>`,
@@ -644,26 +644,14 @@
     const recentDays = dailyEntries.slice(-14);
     const maxDayTokens = Math.max(...recentDays.map(([_, s]) => (s.input + s.cached + s.output)), 1);
 
-    // Сравнительные отметки оси Y (макс, 75%, 50%, 25%)
-    const yGridHtml = `
-      <div class="agy-chart-grid">
-        <div class="agy-grid-line"><span class="agy-grid-val">${formatNumber(maxDayTokens)}</span></div>
-        <div class="agy-grid-line"><span class="agy-grid-val">${formatNumber(Math.round(maxDayTokens * 0.75))}</span></div>
-        <div class="agy-grid-line"><span class="agy-grid-val">${formatNumber(Math.round(maxDayTokens * 0.5))}</span></div>
-        <div class="agy-grid-line"><span class="agy-grid-val">${formatNumber(Math.round(maxDayTokens * 0.25))}</span></div>
-        <div class="agy-grid-line agy-grid-zero"><span class="agy-grid-val">0</span></div>
-      </div>
-    `;
-
     const chartBarsHtml = recentDays.map(([day, stat]) => {
       const dayTotal = stat.input + stat.cached + stat.output;
-      const heightPercent = Math.max(4, Math.min(100, Math.round((dayTotal / maxDayTokens) * 100)));
+      const heightPercent = Math.max(6, Math.min(100, Math.round((dayTotal / maxDayTokens) * 100)));
       const shortDate = day.slice(5); // MM-DD
       const dayCachedPercent = dayTotal > 0 ? Math.round((stat.cached / dayTotal) * 100) : 0;
       return `
         <div class="agy-chart-col" title="${day}: ${formatNumber(dayTotal)} токенов (${stat.requests} req, кэш ${dayCachedPercent}%)">
           <div class="agy-chart-bar-wrap">
-            <span class="agy-bar-val-hint">${dayTotal > 0 ? formatNumber(dayTotal) : ''}</span>
             <div class="agy-chart-bar" style="height: ${heightPercent}%;">
               <div class="agy-chart-bar-cached" style="height: ${dayCachedPercent}%;"></div>
             </div>
@@ -813,10 +801,7 @@
             </div>
           </div>
           <div class="agy-chart-container">
-            ${yGridHtml}
-            <div class="agy-chart-bars-flow">
-              ${chartBarsHtml}
-            </div>
+            ${chartBarsHtml}
           </div>
         </div>
 
@@ -890,43 +875,6 @@
         </div>
         <div class="agy-sessions-list">
           ${sessionsHtml}
-        </div>
-      </div>
-
-      <!-- Bottom Insight & Recommendations -->
-      <div class="agy-analytics-row agy-bottom-insights" style="margin-top: 12px; margin-bottom: 24px;">
-        <div class="agy-card-box agy-insight-card">
-          <div class="agy-box-header">
-            <div class="agy-box-title">Оптимизация контекста</div>
-            <span class="agy-insight-badge">Эффективность</span>
-          </div>
-          <div class="agy-insight-body">
-            <div class="agy-insight-stat">
-              <span class="agy-insight-num">${cacheHitRate}%</span>
-              <span class="agy-insight-desc">Коэффициент кэширования промпта. Значения выше 65% существенно экономят лимиты и ускоряют генерацию.</span>
-            </div>
-            <div class="agy-insight-progress">
-              <div class="agy-insight-fill" style="width: ${Math.min(100, Math.max(10, parseFloat(cacheHitRate) || 0))}%;"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="agy-card-box agy-insight-card">
-          <div class="agy-box-header">
-            <div class="agy-box-title">Скорость и плотность генерации</div>
-            <span class="agy-insight-badge">Производительность</span>
-          </div>
-          <div class="agy-insight-body">
-            <div class="agy-insight-stat">
-              <span class="agy-insight-num">~${formatNumber(avgOutPerReq)}</span>
-              <span class="agy-insight-desc">Токенов на один ответ модели. Баланс между подробностью рассуждений и скоростью выдачи ответа.</span>
-            </div>
-            <div class="agy-insight-tags">
-              <span class="agy-insight-tag">Диалогов: ${heavyList.length}</span>
-              <span class="agy-insight-tag">Инструментов: ${totalTools}</span>
-              <span class="agy-insight-tag">Сэкономлено: ~${formatCost(savedByCacheUsd)}</span>
-            </div>
-          </div>
         </div>
       </div>
     `;
@@ -1173,30 +1121,12 @@
     modRow.classList.remove('active', 'bg-secondary', 'text-foreground');
     modRow.removeAttribute('aria-current');
 
-    // Очищаем скопированные атрибуты всплывающих подсказок (title, aria, tooltip)
-    modRow.removeAttribute('title');
-    modRow.removeAttribute('data-tooltip');
-    modRow.removeAttribute('data-state');
-    modRow.setAttribute('aria-label', 'Моды');
-    modRow.title = 'Моды';
-
-    // Удаляем любые дочерние элементы подсказок или всплывающих плашек, если скопировались
-    const existingTooltips = modRow.querySelectorAll('[role="tooltip"], [data-radix-popper-content-wrapper], .tooltip');
-    existingTooltips.forEach(el => el.remove());
-
-    // Очищаем атрибуты Radix / Floating UI на всех дочерних элементах
-    modRow.querySelectorAll('*').forEach(el => {
-      if (el.hasAttribute('title')) el.removeAttribute('title');
-      if (el.hasAttribute('data-tooltip')) el.removeAttribute('data-tooltip');
-      if (el.hasAttribute('aria-describedby')) el.removeAttribute('aria-describedby');
-    });
-
     const cloneWalker = document.createTreeWalker(modRow, NodeFilter.SHOW_TEXT);
     let cNode;
     while ((cNode = cloneWalker.nextNode())) {
       const v = (cNode.nodeValue || '').trim().toLowerCase();
-      if (v === 'customizations' || v === 'пользовательские настройки' || v === 'настройки' || v === 'mods') {
-        cNode.nodeValue = 'Моды';
+      if (v === 'customizations' || v === 'пользовательские настройки' || v === 'настройки') {
+        cNode.nodeValue = 'Mods';
         break;
       }
     }
@@ -1226,20 +1156,13 @@
     createScreen();
     injectSidebarItem();
 
-    // Быстрый опрос при начальной загрузке
-    let checks = 0;
     const fastCheck = setInterval(() => {
-      injectSidebarItem();
-      checks++;
-      if (checks > 20 && document.getElementById('agy-mods-sidebar-tab')) {
+      if (!document.getElementById('agy-mods-sidebar-tab')) {
+        injectSidebarItem();
+      } else {
         clearInterval(fastCheck);
       }
-    }, 200);
-
-    // Долговременный мониторинг на случай перерендера React
-    setInterval(() => {
-      injectSidebarItem();
-    }, 2000);
+    }, 150);
 
     document.addEventListener('click', (e) => {
       const target = /** @type {HTMLElement} */ (e.target);

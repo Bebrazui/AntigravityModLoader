@@ -38,8 +38,6 @@ const AI_HOSTS = new Set([
 const NODE_LOOKUP_HOST = 'daily-cloudcode-pa.googleapis.com';
 const DNSAI_DOH_HOST = 'cf.dns-ai.ru';
 const DNSAI_TTL = 600 * 1000;
-// Запасные проверенные узлы (Нидерланды)
-const SMART_PINS = ['31.58.216.201'];
 
 const IPS_TTL = 300 * 1000;
 const BAD_TTL = 15 * 1000;
@@ -55,8 +53,6 @@ let gfeChecked = 0;
 let dotDeadUntil = 0;
 let smartNodeIps = [];
 let smartNodeExpires = 0;
-let verifiedAiNode = null;
-let verifiedAiNodeExpires = 0;
 
 let serverInstance = null;
 let activePort = DEFAULT_PORT;
@@ -270,47 +266,25 @@ async function getGfeCandidates() {
 }
 
 /**
- * Рабочий узел DNS-AI для AI-доменов с обязательной TLS-проверкой
- * Проверяет реальным рукопожатием, отсекает мертвые узлы DoH и откатывается на SMART_PINS.
+ * Smart IPs узла DNS-AI для AI доменов
+ * @param {string} domain
  * @returns {Promise<string[]>}
  */
 async function getSmartIps(domain) {
   const now = Date.now();
-  if (verifiedAiNode && now < verifiedAiNodeExpires) {
-    return [verifiedAiNode];
+  if (smartNodeIps.length > 0 && now < smartNodeExpires) {
+    return [...smartNodeIps];
   }
 
-  // 1. Получаем свежие IP из DoH
-  let candidates = [];
-  try {
-    candidates = await dohLookup(DNSAI_DOH_HOST, NODE_LOOKUP_HOST);
-  } catch (_) {}
-
-  // 2. Объединяем с резервными пинами
-  const allCandidates = [...candidates];
-  for (const pin of SMART_PINS) {
-    if (!allCandidates.includes(pin)) {
-      allCandidates.push(pin);
-    }
+  const ips = await dohLookup(DNSAI_DOH_HOST, NODE_LOOKUP_HOST);
+  if (ips.length > 0) {
+    smartNodeIps = ips;
+    smartNodeExpires = now + DNSAI_TTL;
+    return [...smartNodeIps];
   }
 
-  // 3. Параллельно тестируем TLS-рукопожатием (SNI = daily-cloudcode-pa)
-  const probePromises = allCandidates.map(async (ip) => {
-    const ok = await probeTls(ip, 443, NODE_LOOKUP_HOST, 2000);
-    return { ip, ok };
-  });
-
-  const results = await Promise.all(probePromises);
-  const working = results.find(r => r.ok);
-
-  if (working) {
-    verifiedAiNode = working.ip;
-    verifiedAiNodeExpires = now + DNSAI_TTL;
-    return [working.ip];
-  }
-
-  // Крайний фолбэк на SMART_PINS
-  return [...SMART_PINS];
+  smartNodeExpires = now + 120000;
+  return [];
 }
 
 /**
